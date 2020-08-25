@@ -20,6 +20,7 @@ import pytest
 import tensorflow as tf
 
 from tensorflow_tts.inference import AutoConfig
+from tensorflow_tts.inference import AutoProcessor
 from tensorflow_tts.inference import TFAutoModel
 
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -28,6 +29,19 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s (%(module)s:%(lineno)d) %(levelname)s: %(message)s",
 )
+
+
+@pytest.mark.parametrize(
+    "mapper_path", 
+    [
+        "./test/files/baker_mapper.json",
+        "./test/files/kss_mapper.json",
+        "./test/files/libritts_mapper.json",
+        "./test/files/ljspeech_mapper.json",
+     ]
+)
+def test_auto_processor(mapper_path):
+    processor = AutoProcessor.from_pretrained(pretrained_path=mapper_path)
 
 
 @pytest.mark.parametrize(
@@ -44,6 +58,7 @@ logging.basicConfig(
         "./examples/multiband_melgan/conf/multiband_melgan.v1.yaml",
         "./examples/tacotron2/conf/tacotron2.v1.yaml",
         "./examples/tacotron2/conf/tacotron2.kss.v1.yaml",
+        "./examples/parallel_wavegan/conf/parallel_wavegan.v1.yaml",
      ]
 )
 def test_auto_model(config_path):

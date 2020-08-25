@@ -24,6 +24,7 @@ from tensorflow_tts.configs import (
     MelGANGeneratorConfig,
     MultiBandMelGANGeneratorConfig,
     Tacotron2Config,
+    ParallelWaveGANGeneratorConfig,
 )
 
 CONFIG_MAPPING = OrderedDict(
@@ -32,7 +33,8 @@ CONFIG_MAPPING = OrderedDict(
         ("fastspeech2", FastSpeech2Config),
         ("multiband_melgan_generator", MultiBandMelGANGeneratorConfig),
         ("melgan_generator", MelGANGeneratorConfig),
-        ("tacotron2", Tacotron2Config)
+        ("tacotron2", Tacotron2Config),
+        ("parallel_wavegan_generator", ParallelWaveGANGeneratorConfig)
     ]
 )
 
@@ -56,8 +58,8 @@ class AutoConfig:
             return config_class
         except Exception:
             raise ValueError(
-                "Unrecognized model in {}. "
-                "Should have a `model_type` key in its config.json, or contain one of the following strings "
+                "Unrecognized config in {}. "
+                "Should have a `model_type` key in its config.yaml, or contain one of the following strings "
                 "in its name: {}".format(
                     pretrained_path, ", ".join(CONFIG_MAPPING.keys())
                 )

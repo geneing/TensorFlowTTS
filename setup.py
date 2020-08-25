@@ -22,7 +22,7 @@ if LooseVersion(pip.__version__) < LooseVersion("19"):
 # TODO(@dathudeptrai) update requirement if needed.
 requirements = {
     "install": [
-        "tensorflow-gpu>=2.3.0",
+        "tensorflow-gpu>=2.2.0",
         "tensorflow-addons>=0.10.0",
         "setuptools>=38.5.1",
         "librosa>=0.7.0",
@@ -68,12 +68,12 @@ extras_require = {
 
 dirname = os.path.dirname(__file__)
 setup(
-    name="TensorflowTTS",
+    name="TensorFlowTTS",
     version="0.0",
-    url="https://github.com/dathudeptrai/TensorflowTTS",
-    author="Minh Nguyen Quan Anh, Eren Gölge, Kuan Chen, Takuya Ebata, Trinh Le Quang",
-    author_email="nguyenquananhminh@gmail.com, erengolge@gmail.com, azraelkuan@gmail.com, meguru.mokke@gmail.com, trinhle.cse@gmail.com",
-    description="TensorflowTTS: Real-Time State-of-the-art Speech Synthesis for Tensorflow 2",
+    url="https://github.com/tensorspeech/TensorFlowTTS",
+    author="Minh Nguyen Quan Anh, Eren Gölge, Kuan Chen, Dawid Kobus, Takuya Ebata, Trinh Le Quang, Yunchao He, Alejandro Miguel Velasquez",
+    author_email="nguyenquananhminh@gmail.com",
+    description="TensorFlowTTS: Real-Time State-of-the-art Speech Synthesis for Tensorflow 2",
     long_description=open(os.path.join(dirname, "README.md"), encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     license="Apache-2.0",
@@ -88,7 +88,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Intended Audience :: Science/Research",
         "Operating System :: POSIX :: Linux",
-        "License :: OSI Approved :: Apache-2.0 License",
+        "License :: OSI Approved :: Apache Software License",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
 )
