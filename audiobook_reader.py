@@ -6,12 +6,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import scipy.io.wavfile
-
+import re
 from tensorflow_tts.inference import TFAutoModel
 from tensorflow_tts.inference import AutoConfig
 from tensorflow_tts.inference import AutoProcessor
 
 fastspeech2_config = AutoConfig.from_pretrained('pretrained/fastspeech2_config.yml')
+#fastspeech2_config.max_position_embeddings = 20000
 fastspeech2 = TFAutoModel.from_pretrained(
     config=fastspeech2_config,
     pretrained_path="pretrained/fastspeech2-150k.h5",
@@ -26,8 +27,6 @@ mb_melgan = TFAutoModel.from_pretrained(
 )
 
 processor = AutoProcessor.from_pretrained(pretrained_path="pretrained/ljspeech_mapper.json")
-
-
 
 
 def do_synthesis(input_text, text2mel_model, vocoder_model, text2mel_name, vocoder_name):
@@ -71,14 +70,28 @@ def do_synthesis(input_text, text2mel_model, vocoder_model, text2mel_name, vocod
         return mel_outputs.numpy(), audio.numpy()
 
 
-input_text = """He belonged, in fact, to none of the numerous societies
-which swarm in the English capital, from the Harmonic to that of the
-Entomologists, founded mainly for the purpose of abolishing pernicious
-insects."""
 
-mels, audios = do_synthesis(input_text, fastspeech2, mb_melgan, "FASTSPEECH2", "MB-MELGAN")
+input_file = "/home/eugening/Neural/MachineLearning/Speech/ESPnet/my_experiments/Around_the_world_in_80_days.txt"
+output_dir = "/home/eugening/Neural/MachineLearning/Speech/TensorFlowTTS/test_output/"
+fs = 22050
+# synthesis
 
-output_dir = "test_output"
-i=0
-fs=22050
-scipy.io.wavfile.write('%s/%.4d.wav'%(output_dir, i+1), rate=fs, data=audios)
+import spacy
+from spacy.lang.en import English
+nlp = English()
+nlp.add_pipe(nlp.create_pipe('sentencizer'))
+
+
+with open(input_file, 'r') as f:
+    txt = f.read()
+
+doc = nlp(txt)
+
+for i, p in enumerate(doc.sents):
+    try:
+        input_text = p.text.replace('\n', ' ')
+        print(input_text, "\n\n")
+        mels, audios = do_synthesis(input_text, fastspeech2, mb_melgan, "FASTSPEECH2", "MB-MELGAN")
+        scipy.io.wavfile.write('%s/%.4d.wav'%(output_dir, i+1), rate=fs, data=audios)
+    except Exception as e:
+        print("{} \t Failed: {}\n\n".format(e, input_text))
