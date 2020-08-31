@@ -102,7 +102,12 @@ class LJSpeechProcessor(BaseProcessor):
         return self.symbols_to_ids(self.text_to_ph(text))
 
     def symbols_to_ids(self, symbols_list: list):
-        return [self.symbol_to_id[s] for s in symbols_list]
+        ids = []
+        for s in symbols_list:
+            try:
+                ids += self.symbol_to_id[s]
+            except KeyError as e: pass
+        return ids
 
     def text_to_ph(self, text: str):
         return self.clean_g2p(g2p(text))
