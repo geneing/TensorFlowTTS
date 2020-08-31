@@ -105,7 +105,7 @@ class LJSpeechProcessor(BaseProcessor):
         ids = []
         for s in symbols_list:
             try:
-                ids += self.symbol_to_id[s]
+                ids.append(self.symbol_to_id[s])
             except KeyError as e: pass
         return ids
 
