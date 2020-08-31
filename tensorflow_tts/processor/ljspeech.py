@@ -32,12 +32,13 @@ valid_symbols.append("END")
 
 _pad = "pad"
 _eos = "eos"
+_unk = "unk"
 _special = "-"
 
 _punctuation = "!'(),.:;? "
-_arpabet = ["@" + s for s in valid_symbols]
+_arpabet = valid_symbols
 
-LJSPEECH_SYMBOLS = _arpabet + list(_punctuation)
+LJSPEECH_SYMBOLS = [_pad] + [_unk] + _arpabet + list(_punctuation) + list(_special)
 
 # Regular expression matching text enclosed in curly braces:
 _curly_re = re.compile(r"(.*?)\{(.+?)\}(.*)")
@@ -46,6 +47,7 @@ _curly_re = re.compile(r"(.*?)\{(.+?)\}(.*)")
 class LJSpeechProcessor(BaseProcessor):
     """LJSpeech processor."""
 
+    mode: str = "train"
     cleaner_names: str = "english_cleaners"
     positions = {
         "wave_file": 0,
@@ -79,7 +81,8 @@ class LJSpeechProcessor(BaseProcessor):
         audio, rate = sf.read(wav_path, dtype="float32")
 
         # convert text to ids
-        text_ids = np.asarray(self.text_to_sequence(text), np.int32)
+        ids = self.text_to_sequence(text)
+        text_ids = np.asarray(ids, np.int32)
 
         sample = {
             "raw_text": text,
@@ -93,12 +96,7 @@ class LJSpeechProcessor(BaseProcessor):
         return sample
 
     def text_to_sequence(self, text):
-        if (
-                self.mode == "train"
-        ):  # in train mode text should be already transformed to phonemes
-            return self.symbols_to_ids(self.clean_g2p(text.split(" ")))
-        else:
-            return self.inference_text_to_seq(text)
+        return self.symbols_to_ids(self.text_to_ph(text))
 
     def inference_text_to_seq(self, text: str):
         return self.symbols_to_ids(self.text_to_ph(text))
@@ -114,13 +112,14 @@ class LJSpeechProcessor(BaseProcessor):
         for i, txt in enumerate(g2p_text):
             if i == len(g2p_text) - 1:
                 if txt != " " and txt != "SIL":
-                    data.append("@" + txt)
+                    #data.append("@" + txt)
+                    pass
                 else:
                     data.append(
-                        "@END"
+                        "END"
                     )  # TODO try learning without end token and compare results
                 break
-            data.append("@" + txt) if txt != " " else data.append(
-                "@SIL"
+            data.append(txt) if txt != " " else data.append(
+                "SIL"
             )  # TODO change it in inference
         return data
