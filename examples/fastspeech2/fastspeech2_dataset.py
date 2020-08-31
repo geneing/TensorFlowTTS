@@ -92,6 +92,7 @@ class CharactorDurationF0EnergyMelDataset(AbstractDataset):
 
         # assert the number of files
         assert len(mel_files) != 0, f"Not found any mels files in ${root_dir}."
+        print(len(mel_files), len(charactor_files), len(duration_files), len(f0_files), len(energy_files))
         assert (
             len(mel_files)
             == len(charactor_files)
