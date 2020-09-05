@@ -175,7 +175,7 @@ class CharactorDurationF0EnergyMelDataset(AbstractDataset):
         items = {
             "utt_ids": items["utt_ids"],
             "input_ids": charactor,
-            "speaker_ids": 0,
+            "speaker_ids": tf.constant(0, dtype=tf.int32),
             "duration_gts": duration,
             "f0_gts": f0,
             "energy_gts": energy,
