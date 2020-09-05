@@ -47,14 +47,26 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
         base = lambda s: s.replace('-ids.npy','')
         for i in tqdm(os.listdir(os.path.join(pre_path, "ids"))):
             if use_norm == "t":
-                mel = np.load(os.path.join(pre_path, "norm-feats", f"{base(i)}-norm-feats.npy"))
+                mel = np.load(
+                    os.path.join(
+                        pre_path, "norm-feats", f"{i.split('-')[0]}-norm-feats.npy"
+                    )
+                )
             else:
-                mel = np.load(os.path.join(pre_path, "raw-feats", f"{base(i)}-raw-feats.npy"))
+                mel = np.load(
+                    os.path.join(
+                        pre_path, "raw-feats", f"{i.split('-')[0]}-raw-feats.npy"
+                    )
+                )
 
             try:
-                dur = np.load(os.path.join(trimmed_dur_path, f"{base(i)}-durations.npy"))
+                dur = np.load(
+                    os.path.join(trimmed_dur_path, f"{i.split('-')[0]}-durations.npy")
+                )
             except:
-                dur = np.load(os.path.join(dur_path, f"{base(i)}-durations.npy"))
+                dur = np.load(
+                    os.path.join(dur_path, f"{i.split('-')[0]}-durations.npy")
+                )
 
             l_mel = len(mel)
             dur_s = np.sum(dur)
@@ -85,8 +97,12 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
             elif dur_s < l_mel:
                 cloned[-1] += diff
                 mfa_shorter.append(abs(l_mel - dur_s))
-            
-            np.save(os.path.join(pre_path, "fix_dur", f"{base(i)}-durations.npy"), cloned)
+
+            np.save(
+                os.path.join(pre_path, "fix_dur", f"{i.split('-')[0]}-durations.npy"),
+                cloned.astype(np.int32),
+                allow_pickle=False,
+            )
 
         logging.info(
             f"{t} stats: number of mfa with longer duration: {len(mfa_longer)}, total diff: {sum(mfa_longer)}"
