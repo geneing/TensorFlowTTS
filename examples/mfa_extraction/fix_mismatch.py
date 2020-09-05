@@ -49,23 +49,23 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
             if use_norm == "t":
                 mel = np.load(
                     os.path.join(
-                        pre_path, "norm-feats", f"{i.split('-')[0]}-norm-feats.npy"
+                        pre_path, "norm-feats", f"{base(i)}-norm-feats.npy"
                     )
                 )
             else:
                 mel = np.load(
                     os.path.join(
-                        pre_path, "raw-feats", f"{i.split('-')[0]}-raw-feats.npy"
+                        pre_path, "raw-feats", f"{base(i)}-raw-feats.npy"
                     )
                 )
 
             try:
                 dur = np.load(
-                    os.path.join(trimmed_dur_path, f"{i.split('-')[0]}-durations.npy")
+                    os.path.join(trimmed_dur_path, f"{base(i)}-durations.npy")
                 )
             except:
                 dur = np.load(
-                    os.path.join(dur_path, f"{i.split('-')[0]}-durations.npy")
+                    os.path.join(dur_path, f"{base(i)}-durations.npy")
                 )
 
             l_mel = len(mel)
@@ -99,7 +99,7 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
                 mfa_shorter.append(abs(l_mel - dur_s))
 
             np.save(
-                os.path.join(pre_path, "fix_dur", f"{i.split('-')[0]}-durations.npy"),
+                os.path.join(pre_path, "fix_dur", f"{base(i)}-durations.npy"),
                 cloned.astype(np.int32),
                 allow_pickle=False,
             )
