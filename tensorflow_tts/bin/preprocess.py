@@ -263,7 +263,7 @@ def gen_audio_features(item, config):
     audio = np.concatenate([audio, audio_eos], axis=-1)
     audio = np.pad(audio, (0, config["fft_size"]), mode="edge")
     audio = audio[: len(mel) * hop_size]
-    assert len(mel) * hop_size == len(audio), f"{len(mel) * hope_size}, {len(audio)}"
+    assert len(mel) * hop_size == len(audio), f"{len(mel) * hop_size}, {len(audio)}"
 
     # extract raw pitch
     _f0, t = pw.dio(
@@ -571,3 +571,6 @@ def compute_statistics():
     logging.info("Saving computed statistics.")
     scaler_list = [(scaler_mel, ""), (scaler_energy, "_energy"), (scaler_f0, "_f0")]
     save_statistics_to_file(scaler_list, config)
+
+if __name__ == "__main__":
+    preprocess()

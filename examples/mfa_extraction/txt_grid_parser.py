@@ -23,6 +23,7 @@ import numpy as np
 import textgrid
 import yaml
 from tqdm import tqdm
+import json
 
 import logging
 import sys
@@ -43,6 +44,7 @@ class TxtGridParser:
     hop_size: int
     output_durations_path: str
     dataset_path: str
+    char_to_id_mapper: dict
     training_file: str = "train.txt"
     phones_mapper = {"sil": "SIL", "sp": "SIL", "spn": "SIL", "": "END"}
     """ '' -> is last token in every cases i encounter so u can change it for END but there is a safety check
@@ -97,6 +99,10 @@ class TxtGridParser:
                 durations.append(round(dur))
                 phs.append(mark)
 
+            try:
+                ids = [ int(self.char_to_id_mapper["@"+i]) for i in phs ]
+            except Exception as e: print(e)
+
             full_ph = " ".join(phs)
 
             assert full_ph.split(" ").__len__() == durations.__len__()  # safety check
@@ -107,6 +113,17 @@ class TxtGridParser:
                 np.array(durations).astype(np.int32),
                 allow_pickle=False,
             )
+            np.save(
+                os.path.join(self.output_durations_path, f"{base_name}-durations.npy"),
+                np.array(durations).astype(np.int32),
+                allow_pickle=False,
+            )
+            np.save(
+                os.path.join(self.output_durations_path, f"{base_name}-ph-ids.npy"),
+                np.array(ids).astype(np.int32),
+                allow_pickle=False,
+            )
+            
             data.append(f"{speaker_name}/{base_name}|{full_ph}|{speaker_name}\n")
 
 
@@ -118,6 +135,7 @@ class TxtGridParser:
 @click.option("--text_grid_path", default="mfa/parsed", type=str)
 @click.option("--output_durations_path", default="dataset/durations")
 @click.option("--sample_rate", default=24000, type=int)
+@click.option("--character_mapper", default="pretrained/ljspeech_mapper.json", type=str)
 @click.option("--multi_speakers", default=1, type=int, help="Use multi-speaker version")
 @click.option("--train_file", default="train.txt")
 def main(
@@ -126,6 +144,7 @@ def main(
     text_grid_path: str,
     output_durations_path: str,
     sample_rate: int,
+    character_mapper: str,
     multi_speakers: int,
     train_file: str,
 ):
@@ -136,6 +155,9 @@ def main(
 
     Path(output_durations_path).mkdir(parents=True, exist_ok=True)
 
+    with open(character_mapper, 'r') as f:
+        mapper = json.load(f)['symbol_to_id']
+
     txt_grid_parser = TxtGridParser(
         sample_rate=sample_rate,
         multi_speaker=bool(multi_speakers),
@@ -143,6 +165,7 @@ def main(
         hop_size=hop_size,
         output_durations_path=output_durations_path,
         training_file=train_file,
+        char_to_id_mapper=mapper,
         dataset_path=dataset_path,
     )
     txt_grid_parser.parse()

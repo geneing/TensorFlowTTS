@@ -1,0 +1,14 @@
+ROOTDIR="/home/eugening/Neural/MachineLearning/Speech/TrainingData/LJSpeech-1.0"
+ROOTPROC="/home/eugening/Neural/MachineLearning/Speech/TrainingData/LJSpeech-1.0.TensorFlowTTS"
+
+python3 examples/fastspeech2/prep_mfa.py --rootdir $ROOTDIR --verbose 2
+
+
+tensorflow-tts-preprocess --rootdir $ROOTDIR --outdir $ROOTPROC --config preprocess/ljspeech_preprocess.yaml --dataset ljspeech --n_cpus 2
+tensorflow-tts-normalize --rootdir $ROOTPROC --outdir $ROOTPROC --config preprocess/ljspeech_preprocess.yaml --dataset ljspeech --n_cpus 2  
+
+python3 examples/mfa_extraction/run_mfa.py --corpus_directory $ROOTDIR/wavs --output_directory $ROOTPROC/parsed --jobs 20
+python3 examples/mfa_extraction/txt_grid_parser.py --yaml_path examples/fastspeech2/conf/fastspeech2.v1.yaml --dataset_path $ROOTDIR/ --text_grid_path $ROOTPROC/parsed/ --output_durations_path $ROOTPROC/durations --train_file $ROOTPROC/train.txt --sample_rate 22050 --character_mapper pretrained/ljspeech_mapper.json
+python3 examples/mfa_extraction/fix_mismatch.py --base_path $ROOTPROC --trimmed_dur_path $ROOTPROC/trimmed_durations --dur_path $ROOTPROC/durations/ --use_norm t
+
+CUDA_VISIBLE_DEVICES=0 python3 examples/fastspeech2/train_fastspeech2.py --train-dir $ROOTPROC/train --dev-dir $ROOTPROC/valid --outdir examples/fastspeech2/exp/train.fastspeech2.v1.1/ --config examples/fastspeech2/conf/fastspeech2.v1.yaml --use-norm 1 --f0-stat $ROOTPROC/stats_f0.npy --energy-stat $ROOTPROC/stats_energy.npy --use-phonems 1

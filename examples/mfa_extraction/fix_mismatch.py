@@ -42,7 +42,8 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
         not_fixed = []
         pre_path = os.path.join(base_path, t)
         os.makedirs(os.path.join(pre_path, "fix_dur"), exist_ok=True)
-
+        os.makedirs(os.path.join(pre_path, "ph-ids"),  exist_ok=True)
+        
         logging.info(f"FIXING {t} set ...\n")
         base = lambda s: s.replace('-ids.npy','')
         for i in tqdm(os.listdir(os.path.join(pre_path, "ids"))):
@@ -67,6 +68,8 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
                 dur = np.load(
                     os.path.join(dur_path, f"{base(i)}-durations.npy")
                 )
+
+            ph_ids = np.load(os.path.join(dur_path, f"{base(i)}-ph-ids.npy"))
 
             l_mel = len(mel)
             dur_s = np.sum(dur)
@@ -101,6 +104,12 @@ def fix(base_path: str, dur_path: str, trimmed_dur_path: str, use_norm: str):
             np.save(
                 os.path.join(pre_path, "fix_dur", f"{base(i)}-durations.npy"),
                 cloned.astype(np.int32),
+                allow_pickle=False,
+            )
+
+            np.save(
+                os.path.join(pre_path, "ph-ids", f"{base(i)}-ph-ids.npy"),
+                ph_ids,
                 allow_pickle=False,
             )
 

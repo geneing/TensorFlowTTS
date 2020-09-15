@@ -199,6 +199,12 @@ def main():
         "--use-norm", default=1, type=int, help="usr norm-mels for train or raw."
     )
     parser.add_argument(
+        "--use-phonems",
+        type=int,
+        default=0,
+        help="use phonemes for training (default=0)",
+    )
+    parser.add_argument(
         "--f0-stat",
         default="./dump/stats_f0.npy",
         type=str,
@@ -257,6 +263,7 @@ def main():
 
     args.mixed_precision = bool(args.mixed_precision)
     args.use_norm = bool(args.use_norm)
+    args.use_phonems = bool(args.use_phonems)
 
     # set logger
     if args.verbose > 1:
@@ -306,7 +313,7 @@ def main():
         mel_length_threshold = None
 
     if config["format"] == "npy":
-        charactor_query = "*-ids.npy"
+        charactor_query = "*-ph-ids.npy" if args.use_phonems else "*-ids.npy"
         mel_query = "*-raw-feats.npy" if args.use_norm is False else "*-norm-feats.npy"
         duration_query = "*-durations.npy"
         f0_query = "*-raw-f0.npy"
