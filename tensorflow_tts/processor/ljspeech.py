@@ -103,7 +103,11 @@ class LJSpeechProcessor(BaseProcessor):
         return sample
 
     def text_to_sequence(self, text):
-        return self.inference_text_to_seq(text)
+        try:
+            return self.inference_text_to_seq(text)
+        except:
+            raise Exception("Bad String:%s"%text)
+        return self.inference_text_to_seq("")
         # if (
         #     self.mode == "train"
         # ):  # in train mode text should be already transformed to phonemes
