@@ -172,7 +172,7 @@ class LJSpeechProcessor(BaseProcessor):
                         "@END"
                     )  # TODO try learning without end token and compare results
                 break
-            data.append("@" + txt) if txt not in _nonarpabet else data.append(
+            data.append("@" + txt) if txt not in _punctuation else data.append(
                 "@SIL"
             )  # TODO change it in inference
         return data
