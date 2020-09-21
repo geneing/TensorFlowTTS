@@ -313,7 +313,7 @@ def main():
         mel_length_threshold = None
 
     if config["format"] == "npy":
-        charactor_query = "*-ph-ids.npy" if args.use_phonems else "*-ids.npy"
+        charactor_query = "*-phids.npy" if args.use_phonems else "*-ids.npy"
         mel_query = "*-raw-feats.npy" if args.use_norm is False else "*-norm-feats.npy"
         duration_query = "*-durations.npy"
         f0_query = "*-raw-f0.npy"

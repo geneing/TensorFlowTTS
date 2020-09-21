@@ -119,7 +119,7 @@ class TxtGridParser:
                 allow_pickle=False,
             )
             np.save(
-                os.path.join(self.output_durations_path, f"{base_name}-ph-ids.npy"),
+                os.path.join(self.output_durations_path, f"{base_name}-phids.npy"),
                 np.array(ids).astype(np.int32),
                 allow_pickle=False,
             )
