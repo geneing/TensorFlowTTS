@@ -45,6 +45,7 @@ LJSPEECH_SYMBOLS = (
 )
 
 _nonarpabet = set([_pad] + list(_special) + list(_punctuation) + list(_letters) + [_eos])
+_ph_skip = set([_pad] + list(_special) + list(_punctuation) + [_eos])
 
 # Regular expression matching text enclosed in curly braces:
 _curly_re = re.compile(r"(.*?)\{(.+?)\}(.*)")
@@ -172,7 +173,7 @@ class LJSpeechProcessor(BaseProcessor):
                         "@END"
                     )  # TODO try learning without end token and compare results
                 break
-            data.append("@" + txt) if txt not in _punctuation else data.append(
+            data.append("@" + txt) if txt not in _ph_skip else data.append(
                 "@SIL"
             )  # TODO change it in inference
         return data
