@@ -46,7 +46,7 @@ class TxtGridParser:
     dataset_path: str
     char_to_id_mapper: dict
     training_file: str = "train.txt"
-    phones_mapper = {"sil": "SIL", "sp": "SIL", "spn": "SIL", "": "END"}
+    phones_mapper = {"sil": "SIL", "sp": " ", "spn": "SIL", "": "END"}
     """ '' -> is last token in every cases i encounter so u can change it for END but there is a safety check
         so it'll fail always when empty string isn't last char in ur dataset just chang it to silence then
     """
@@ -100,12 +100,17 @@ class TxtGridParser:
                 phs.append(mark)
 
             try:
-                ids = [ int(self.char_to_id_mapper["@"+i]) for i in phs ]
-            except Exception as e: print(e)
+                ids=[]
+                for i in phs:
+                    c = "@"+i if i != " " else i
+                    ids.append(int(self.char_to_id_mapper[c]))
+            except Exception as e: 
+                print(e)
+                raise
 
-            full_ph = " ".join(phs)
-
-            assert full_ph.split(" ").__len__() == durations.__len__()  # safety check
+            full_ph = (" ".join(phs))
+            
+            assert phs.__len__() == durations.__len__()  # safety check
 
             base_name = f_name.split(".TextGrid")[0]
             np.save(
