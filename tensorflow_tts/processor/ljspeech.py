@@ -173,7 +173,9 @@ class LJSpeechProcessor(BaseProcessor):
                         "@END"
                     )  # TODO try learning without end token and compare results
                 break
-            data.append("@" + txt) if txt not in _ph_skip else data.append(
-                "@SIL"
-            )  # TODO change it in inference
+
+            c = ("@" + txt)
+            if txt in _ph_skip : c = "@SIL"
+            if txt==' ' : c = txt
+            data.append(c)
         return data
